@@ -2,7 +2,7 @@ package lucasti.viavarejo.services;
 
 import java.util.List;
 
-import lucasti.viavarejo.entities.Cliente;
+import lucasti.viavarejo.models.entities.Cliente;
 
 
 public interface ClienteService {

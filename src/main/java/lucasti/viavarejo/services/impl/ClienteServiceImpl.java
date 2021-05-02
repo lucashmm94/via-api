@@ -6,9 +6,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import lucasti.viavarejo.entities.Cliente;
 import lucasti.viavarejo.exceptions.BusinessException;
 import lucasti.viavarejo.exceptions.ResourceNotFoundException;
+import lucasti.viavarejo.models.entities.Cliente;
 import lucasti.viavarejo.repositories.ClienteRepository;
 import lucasti.viavarejo.services.ClienteService;
 

@@ -1,4 +1,4 @@
-package lucasti.viavarejo.entities;
+package lucasti.viavarejo.models.entities;
 
 import java.io.Serializable;
 
