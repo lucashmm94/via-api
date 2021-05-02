@@ -11,6 +11,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import lucasti.viavarejo.exceptions.BusinessException;
+
 @Document(collection = "apolices")
 public class Apolice implements Serializable {
 
@@ -42,7 +44,9 @@ public class Apolice implements Serializable {
 
 	public Apolice(String numero, LocalDate vigenciaInicio, LocalDate vigenciaFim, String placaVeiculo, Double valor,
 			Cliente cliente) {
-		super();
+		if (vigenciaFim.isBefore(vigenciaInicio)) {
+			throw new BusinessException("Data de inicio não pode ser maior que data fim");
+		}
 		this.numero = numero;
 		this.vigenciaInicio = vigenciaInicio;
 		this.vigenciaFim = vigenciaFim;

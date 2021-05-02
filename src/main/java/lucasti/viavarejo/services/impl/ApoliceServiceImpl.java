@@ -6,6 +6,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import lucasti.viavarejo.exceptions.ResourceNotFoundException;
+import lucasti.viavarejo.models.dtos.ApoliceDTO;
 import lucasti.viavarejo.models.entities.Apolice;
 import lucasti.viavarejo.repositories.ApoliceRepository;
 import lucasti.viavarejo.services.ApoliceService;
@@ -17,9 +19,12 @@ public class ApoliceServiceImpl implements  ApoliceService {
 	@Autowired
 	ApoliceRepository repository;
 	
-	private ModelMapper modelmapper = new ModelMapper();
-//	private final String MSG_CPF_DUPLICADO = "CPF já está cadastrado!";
-//	private final String MSG_NAO_CLIENTE_CADASTRADO = "Cliente não cadastrado";
+	@Autowired
+	ClienteServiceImpl clientesService;
+	
+	private ModelMapper modelMapper = new ModelMapper();
+
+	private final String MSG_APOLICE_NAO_CADASTRADA = "Apólice não cadastrada";
 	
 	
 	@Override
@@ -27,27 +32,35 @@ public class ApoliceServiceImpl implements  ApoliceService {
 		return repository.findAll();
 	}
 	@Override
-	public Apolice findByNumero(String numero) {
-		// TODO Auto-generated method stub
-		return null;
+	public ApoliceDTO findByNumero(String numero) {
+		ApoliceDTO apoliceDTO = new ApoliceDTO();
+		Apolice apoliceBanco = repository.findByNumero(numero)
+				.orElseThrow( () ->  new ResourceNotFoundException(MSG_APOLICE_NAO_CADASTRADA));
+		modelMapper.map(apoliceBanco, apoliceDTO);
+		return apoliceDTO;
 	}
 	@Override
 	public Apolice save(Apolice apolice) {
-		// TODO Auto-generated method stub
-		return null;
+		if(clientesService.findById(apolice.getCliente().getId()) != null) {
+			return repository.save(apolice);
+		} 
+		return apolice;
 	}
 	@Override
-	public Apolice update(Apolice apolice, String id) {
-		// TODO Auto-generated method stub
-		return null;
+	public Apolice update(Apolice apolice, String numero) {
+		isExitsApolice(numero);
+		apolice.setNumero(numero);
+		return repository.save(apolice);
 	}
 	@Override
-	public void deleteByNumero(String id) {
-		// TODO Auto-generated method stub
-		
+	public void deleteByNumero(String numero) {
+		if(isExitsApolice(numero)) {	
+			repository.deleteById(numero);
+		}	
 	}
 	
-
-	
+	private Boolean isExitsApolice(String numero) {
+		return repository.existsByNumero(numero).orElseThrow(() -> new ResourceNotFoundException(MSG_APOLICE_NAO_CADASTRADA));
+	}
 
 }
