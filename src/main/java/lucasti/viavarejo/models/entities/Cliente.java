@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import javax.validation.constraints.NotEmpty;
 
+import org.hibernate.validator.constraints.br.CPF;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -18,6 +19,7 @@ public class Cliente implements Serializable {
 	@NotEmpty(message = "Nome não pode nulo ou branco")
 	private String nome;
 	
+	@CPF(message="CPF inválido")
 	@NotEmpty(message = "CPF não pode nulo ou branco")
 	private String cpf;
 	
