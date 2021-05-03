@@ -5,7 +5,9 @@ import java.util.List;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
+import br.com.caelum.stella.validation.CPFValidator;
 import lucasti.viavarejo.exceptions.BusinessException;
 import lucasti.viavarejo.exceptions.ResourceNotFoundException;
 import lucasti.viavarejo.models.entities.Cliente;
@@ -18,6 +20,8 @@ public class ClienteServiceImpl implements  ClienteService {
 	
 	@Autowired
 	ClienteRepository repository;
+	
+	CPFValidator cpfValidator = new CPFValidator(); 
 	
 	private ModelMapper modelmapper = new ModelMapper();
 	private final String MSG_CPF_DUPLICADO = "CPF já está cadastrado!";
@@ -37,17 +41,13 @@ public class ClienteServiceImpl implements  ClienteService {
 
 	@Override
 	public Cliente save(Cliente cliente) {
-		if (cliente.getId() != null) {
-			new BusinessException(MSG_CLIENTE_CADASTRADO_DUPLICADO);
-		}
+		isDuplicadoCPF(cliente.getCpf(),null);
 		return repository.save(cliente);
 	}
 
 	@Override
 	public Cliente update(Cliente cliente, String id) {
-		if (repository.existsByCpfAndIdNot(cliente.getCpf(), id)) {
-			throw new BusinessException( MSG_CPF_DUPLICADO);
-		}
+		isDuplicadoCPF(cliente.getCpf(),id);
 		Cliente clienteBanco = findById(id);
 		modelmapper.map(cliente, clienteBanco);
 		clienteBanco.setId(id);
@@ -64,4 +64,25 @@ public class ClienteServiceImpl implements  ClienteService {
 	private Boolean isExitsCliente(String cpf) {
 		return repository.existsByCpf(cpf).orElseThrow(() -> new ResourceNotFoundException(MSG_NAO_CLIENTE_CADASTRADO));
 	}
+	
+	
+	private void isDuplicadoCPF(String cpf, String id) {
+		isCPFValido(cpf);
+		if (!ObjectUtils.isEmpty(id)) {
+			if (repository.existsByCpfAndIdNot(cpf, id)) {
+				throw new BusinessException( MSG_CPF_DUPLICADO);
+			}
+		} else {
+			if(repository.existsByCpf(cpf).get()) {
+				throw new BusinessException( MSG_CPF_DUPLICADO);
+			}
+		}
+	}
+	
+	private void isCPFValido(String cpf){
+		if(!cpfValidator.isEligible(cpf)) {
+			throw new BusinessException("CPF inválido");
+		}
+	}
+	
 }
