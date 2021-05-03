@@ -22,6 +22,7 @@ public class ClienteServiceImpl implements  ClienteService {
 	private ModelMapper modelmapper = new ModelMapper();
 	private final String MSG_CPF_DUPLICADO = "CPF já está cadastrado!";
 	private final String MSG_NAO_CLIENTE_CADASTRADO = "Cliente não cadastrado";
+	private final String MSG_CLIENTE_CADASTRADO_DUPLICADO = "Cliente já cadastrado";
 	
 
 	@Override
@@ -36,8 +37,8 @@ public class ClienteServiceImpl implements  ClienteService {
 
 	@Override
 	public Cliente save(Cliente cliente) {
-		if(repository.existsByCpf(cliente.getCpf())) {
-			throw new BusinessException(MSG_CPF_DUPLICADO);
+		if (repository.existsById(cliente.getId())) {
+			new BusinessException(MSG_CLIENTE_CADASTRADO_DUPLICADO);
 		}
 		return repository.save(cliente);
 	}
@@ -55,9 +56,12 @@ public class ClienteServiceImpl implements  ClienteService {
 
 	@Override
 	public void deleteById(String id) {
-		findById(id);
+		isExitsCliente(id);
 		repository.deleteById(id); 
 		
 	}
 
+	private Boolean isExitsCliente(String cpf) {
+		return repository.existsByCpf(cpf).orElseThrow(() -> new ResourceNotFoundException(MSG_NAO_CLIENTE_CADASTRADO));
+	}
 }
