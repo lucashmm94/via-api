@@ -26,7 +26,6 @@ public class ClienteServiceImpl implements  ClienteService {
 	private ModelMapper modelmapper = new ModelMapper();
 	private final String MSG_CPF_DUPLICADO = "CPF já está cadastrado!";
 	private final String MSG_NAO_CLIENTE_CADASTRADO = "Cliente não cadastrado";
-	private final String MSG_CLIENTE_CADASTRADO_DUPLICADO = "Cliente já cadastrado";
 	
 
 	@Override
