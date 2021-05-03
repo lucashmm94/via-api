@@ -1,5 +1,8 @@
 package lucasti.viavarejo.services.impl;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
@@ -26,6 +29,9 @@ public class ApoliceServiceImpl implements  ApoliceService {
 
 	private final String MSG_APOLICE_NAO_CADASTRADA = "Apólice não cadastrada";
 	
+	private DateTimeFormatter dateTimeFormatter =  DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+	
 	
 	@Override
 	public List<Apolice> findAll() {
@@ -37,6 +43,7 @@ public class ApoliceServiceImpl implements  ApoliceService {
 		Apolice apoliceBanco = repository.findByNumero(numero)
 				.orElseThrow( () ->  new ResourceNotFoundException(MSG_APOLICE_NAO_CADASTRADA));
 		modelMapper.map(apoliceBanco, apoliceDTO);
+		apoliceDTO = calcularVigencia(apoliceDTO);
 		return apoliceDTO;
 	}
 	@Override
@@ -63,4 +70,21 @@ public class ApoliceServiceImpl implements  ApoliceService {
 		return repository.existsByNumero(numero).orElseThrow(() -> new ResourceNotFoundException(MSG_APOLICE_NAO_CADASTRADA));
 	}
 
+	private ApoliceDTO calcularVigencia(ApoliceDTO apoliceDTO) {
+		LocalDate hoje = LocalDate.now();
+		
+		String strVigenciaFim = dateTimeFormatter.format(apoliceDTO.getVigenciaFim());
+		LocalDate ldVigenciaFim = LocalDate.parse(strVigenciaFim,dateTimeFormatter);
+
+
+		if(ldVigenciaFim.isBefore(hoje)) {
+			apoliceDTO.setIsVenceu(true);
+			apoliceDTO.setQuantosDiasVencerVencido("A apolice venceu há: "+ldVigenciaFim.until(hoje, ChronoUnit.DAYS)+" dias");
+		}
+		else {
+			apoliceDTO.setIsVenceu(false);
+			apoliceDTO.setQuantosDiasVencerVencido("Faltam: "+ hoje.until(ldVigenciaFim, ChronoUnit.DAYS) + " dias para vencer a apólice" );
+		}
+		return apoliceDTO;
+	}
 }

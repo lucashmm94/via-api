@@ -3,6 +3,8 @@ package lucasti.viavarejo.controllers;
 import java.net.URI;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,14 +18,14 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import lucasti.viavarejo.models.entities.Cliente;
-import lucasti.viavarejo.services.impl.ClienteServiceImpl;
+import lucasti.viavarejo.services.ClienteService;
 
 @RestController
 @RequestMapping(value="/cliente")
 public class ClienteController {
 	
 	@Autowired
-	ClienteServiceImpl service;
+	ClienteService service;
 	
 	@GetMapping
 	public ResponseEntity<List<Cliente>> findAll() {
@@ -39,15 +41,16 @@ public class ClienteController {
 	}
 	
 	@PostMapping
-	public ResponseEntity<Cliente> save(@RequestBody Cliente cliente){
+	public ResponseEntity<Cliente> save(@RequestBody @Valid Cliente cliente){
 		Cliente clienteCriado = service.save(cliente);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(clienteCriado.getId())
 				.toUri();
 		return ResponseEntity.created(uri).body(clienteCriado);
+		
 	}
 	
 	@PutMapping(value="/{id}")
-	public ResponseEntity<Cliente> update(@RequestBody Cliente cliente, @PathVariable String id){
+	public ResponseEntity<Cliente> update(@RequestBody @Valid Cliente cliente, @PathVariable String id){
 		Cliente clienteAtualizado = service.update(cliente, id);
 		return ResponseEntity.ok().body(clienteAtualizado);
 	}

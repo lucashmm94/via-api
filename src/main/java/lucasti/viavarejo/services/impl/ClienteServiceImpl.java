@@ -37,7 +37,7 @@ public class ClienteServiceImpl implements  ClienteService {
 
 	@Override
 	public Cliente save(Cliente cliente) {
-		if (repository.existsById(cliente.getId())) {
+		if (cliente.getId() != null) {
 			new BusinessException(MSG_CLIENTE_CADASTRADO_DUPLICADO);
 		}
 		return repository.save(cliente);

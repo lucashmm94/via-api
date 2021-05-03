@@ -3,6 +3,7 @@ package lucasti.viavarejo.models.entities;
 import java.io.Serializable;
 import java.time.LocalDate;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.data.annotation.Id;
@@ -29,7 +30,7 @@ public class Apolice implements Serializable {
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	private LocalDate vigenciaFim;
 	
-	@NotNull
+	@NotEmpty(message="Placa de veículo não pode ser nulo")
 	private String placaVeiculo;
 	
 	@NotNull
@@ -42,12 +43,11 @@ public class Apolice implements Serializable {
 	public Apolice () {}
 	
 
-	public Apolice(String numero, LocalDate vigenciaInicio, LocalDate vigenciaFim, String placaVeiculo, Double valor,
+	public Apolice(LocalDate vigenciaInicio, LocalDate vigenciaFim, String placaVeiculo, Double valor,
 			Cliente cliente) {
 		if (vigenciaFim.isBefore(vigenciaInicio)) {
 			throw new BusinessException("Data de inicio não pode ser maior que data fim");
 		}
-		this.numero = numero;
 		this.vigenciaInicio = vigenciaInicio;
 		this.vigenciaFim = vigenciaFim;
 		this.placaVeiculo = placaVeiculo;

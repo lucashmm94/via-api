@@ -2,7 +2,8 @@ package lucasti.viavarejo.models.dtos;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
+
+import org.springframework.data.mongodb.core.mapping.DBRef;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -30,10 +31,6 @@ public class ApoliceDTO implements Serializable {
 
 	private String quantosDiasVencerVencido;
 		
-	public ApoliceDTO() {
-		calcularVigencia();
-	}
-	
 
 	public String getNumero() {
 		return numero;
@@ -75,6 +72,14 @@ public class ApoliceDTO implements Serializable {
 		this.valor = valor;
 	}
 
+	public Cliente getCliente() {
+		return cliente;
+	}
+
+	public void setCliente(Cliente cliente) {
+		this.cliente = cliente;
+	}
+
 	public Boolean getIsVenceu() {
 		return isVenceu;
 	}
@@ -95,18 +100,7 @@ public class ApoliceDTO implements Serializable {
 		return serialVersionUID;
 	}
 	
-	private void calcularVigencia() {
-		LocalDate hoje = LocalDate.now();
-		
-		if(this.vigenciaFim.isBefore(hoje)) {
-			this.setIsVenceu(false);
-			this.setQuantosDiasVencerVencido("Faltam: "+ hoje.until(vigenciaFim, ChronoUnit.DAYS) + " dias para vencer a apólice" );
-		}
-		else {
-			this.setIsVenceu(true);
-			this.setQuantosDiasVencerVencido("A apolice venceu há: "+vigenciaFim.until(hoje, ChronoUnit.DAYS)+" dias");
-		}
-	}
+	
 
 	@Override
 	public String toString() {
